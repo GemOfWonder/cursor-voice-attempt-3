@@ -15,6 +15,41 @@ A VS Code/Cursor extension that enables voice commands and voice-to-text functio
 2. Install the extension in VS Code/Cursor
 3. Grant microphone permissions when prompted
 
+## Microphone Access
+
+To use the extension, you need to grant microphone access:
+
+### First-time Setup
+- When you first use the extension, your browser will prompt you to allow microphone access
+- Click "Allow" when prompted
+
+### Manual Permission Setup
+If you need to grant or revoke access later:
+
+1. **In VS Code/Cursor:**
+   - Click the lock icon in the address bar
+   - Look for "Microphone" permissions
+   - Select "Allow" from the dropdown menu
+
+2. **In Chrome/Edge:**
+   - Click the lock icon in the address bar
+   - Click "Site settings"
+   - Find "Microphone" in the permissions list
+   - Change it to "Allow"
+
+3. **In Firefox:**
+   - Click the lock icon in the address bar
+   - Click "Permissions"
+   - Find "Use the Microphone"
+   - Select "Allow"
+
+### Troubleshooting Microphone Access
+If you're having trouble with microphone access:
+1. Make sure your microphone is properly connected and working
+2. Check your system's microphone settings
+3. Try revoking and re-granting microphone access
+4. Restart VS Code/Cursor after changing permissions
+
 ## Usage
 
 ### Voice Commands

@@ -45,7 +45,12 @@ export class VoiceRecognitionService {
     }
 
     public async initialize() {
-        // Web Speech API is initialized when startListening is called
+        // Create webview and request microphone permissions
+        this.recognition = this.createWebview();
+        if (this.recognition) {
+            // Request microphone permissions immediately
+            this.recognition.webview.postMessage({ command: 'requestPermission' });
+        }
     }
 
     private createWebview() {
@@ -189,144 +194,82 @@ export class VoiceRecognitionService {
                 </div>
                 <script>
                     const vscode = acquireVsCodeApi();
-                    let recognition;
+                    let recognition = null;
                     let isListening = false;
-                    let lastCommandTime = 0;
-                    const commandTimeout = 2000; // 2 seconds
 
-                    function updateStatus(listening, error) {
-                        const status = document.getElementById('status');
-                        const micIcon = document.getElementById('micIcon');
-                        status.className = 'status ' + (error ? 'error' : (listening ? 'listening' : 'stopped'));
-                        status.textContent = error || (listening ? 'Listening...' : 'Voice recognition stopped');
-                        micIcon.className = 'mic-status ' + (listening ? 'mic-on' : 'mic-off');
-                    }
-
-                    function showPermissionRequest() {
-                        document.getElementById('permission').style.display = 'block';
-                    }
-
-                    function hidePermissionRequest() {
-                        document.getElementById('permission').style.display = 'none';
-                    }
-
-                    function updateTranscript(text, isCommand = false) {
-                        const transcript = document.getElementById('transcript');
-                        transcript.textContent = text;
-                        if (isCommand) {
-                            transcript.className = 'recognition-text command-detected';
-                            setTimeout(() => {
-                                transcript.className = 'recognition-text';
-                            }, 1000);
-                        } else {
-                            transcript.className = 'recognition-text';
-                        }
-                    }
-
+                    // Function to request microphone permission
                     async function requestMicrophonePermission() {
                         try {
                             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                             stream.getTracks().forEach(track => track.stop());
-                            hidePermissionRequest();
+                            document.getElementById('permissionRequest').style.display = 'none';
+                            document.getElementById('status').style.display = 'block';
                             return true;
                         } catch (error) {
-                            updateStatus(false, 'Microphone access denied. Please grant permission to use voice commands.');
+                            console.error('Error accessing microphone:', error);
+                            document.getElementById('permissionRequest').style.display = 'block';
+                            document.getElementById('status').style.display = 'none';
                             return false;
                         }
                     }
 
-                    function initializeRecognition() {
-                        if ('webkitSpeechRecognition' in window) {
-                            recognition = new webkitSpeechRecognition();
-                        } else if ('SpeechRecognition' in window) {
-                            recognition = new SpeechRecognition();
-                        } else {
-                            vscode.postMessage({ command: 'error', error: 'Speech recognition not supported' });
-                            return false;
-                        }
-
+                    // Initialize recognition
+                    if ('webkitSpeechRecognition' in window) {
+                        recognition = new webkitSpeechRecognition();
                         recognition.continuous = true;
                         recognition.interimResults = true;
-                        recognition.lang = '${language}';
+                        recognition.lang = 'en-US';
+
+                        recognition.onstart = () => {
+                            isListening = true;
+                            document.getElementById('status').textContent = 'Listening...';
+                        };
+
+                        recognition.onend = () => {
+                            isListening = false;
+                            document.getElementById('status').textContent = 'Click to start listening';
+                        };
 
                         recognition.onresult = (event) => {
                             const transcript = Array.from(event.results)
-                                .map(result => result[0])
-                                .map(result => result.transcript)
+                                .map(result => result[0].transcript)
                                 .join('');
-
-                            const now = Date.now();
-                            const isFinal = event.results[0].isFinal;
-                            
-                            if (isFinal) {
-                                // Check if enough time has passed since the last command
-                                if (now - lastCommandTime >= commandTimeout) {
-                                    vscode.postMessage({ 
-                                        command: 'transcript', 
-                                        text: transcript,
-                                        timestamp: now
-                                    });
-                                    lastCommandTime = now;
-                                }
-                            } else {
-                                updateTranscript(transcript);
-                            }
+                            vscode.postMessage({ command: 'transcript', text: transcript });
                         };
 
                         recognition.onerror = (event) => {
                             if (event.error === 'not-allowed') {
-                                showPermissionRequest();
-                            }
-                            vscode.postMessage({ command: 'error', error: event.error });
-                        };
-
-                        recognition.onend = () => {
-                            if (isListening) {
-                                recognition.start();
+                                requestMicrophonePermission();
                             }
                         };
-
-                        return true;
                     }
 
-                    document.getElementById('requestPermission').addEventListener('click', async () => {
-                        if (await requestMicrophonePermission()) {
-                            if (!recognition && !initializeRecognition()) {
-                                return;
-                            }
-                            isListening = true;
-                            recognition.start();
-                            updateStatus(true);
-                        }
-                    });
-
-                    window.addEventListener('message', async event => {
+                    // Handle messages from extension
+                    window.addEventListener('message', event => {
                         const message = event.data;
                         switch (message.command) {
-                            case 'start':
-                                if (!recognition && !initializeRecognition()) {
-                                    return;
-                                }
-                                if (await requestMicrophonePermission()) {
-                                    isListening = true;
-                                    recognition.start();
-                                    updateStatus(true);
+                            case 'requestPermission':
+                                requestMicrophonePermission();
+                                break;
+                            case 'startListening':
+                                if (recognition && !isListening) {
+                                    requestMicrophonePermission().then(hasPermission => {
+                                        if (hasPermission) {
+                                            recognition.start();
+                                        }
+                                    });
                                 }
                                 break;
-                            case 'stop':
-                                isListening = false;
-                                if (recognition) {
+                            case 'stopListening':
+                                if (recognition && isListening) {
                                     recognition.stop();
                                 }
-                                updateStatus(false);
-                                break;
-                            case 'command-detected':
-                                updateTranscript(message.text, true);
                                 break;
                         }
                     });
 
-                    vscode.postMessage({ command: 'ready' });
+                    // Initial permission request
+                    requestMicrophonePermission();
                 </script>
             </body>
             </html>
@@ -411,10 +354,16 @@ export class VoiceRecognitionService {
             // Get the active text editor
             const editor = vscode.window.activeTextEditor;
             if (editor) {
-                // Replace the current line with the message
                 const line = editor.document.lineAt(editor.selection.active.line);
+                const existingText = line.text;
+                
+                // Append the new message to existing text, adding a space if needed
+                const newText = existingText.trim() 
+                    ? `${existingText} ${message}`
+                    : message;
+                
                 await editor.edit(editBuilder => {
-                    editBuilder.replace(line.range, message);
+                    editBuilder.replace(line.range, newText);
                 });
             }
             
