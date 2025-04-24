@@ -1,84 +1,89 @@
-# Cursor Voice Commands
+# Cursor Voice Commands Extension
 
-A VS Code extension that allows you to interact with Cursor AI using voice commands. This extension uses the Web Speech API to convert your voice into text commands.
+A VS Code/Cursor extension that enables voice commands and voice-to-text functionality using the Web Speech API.
 
 ## Features
 
-- Voice-to-text conversion using Web Speech API
-- Configurable language support
-- Real-time status feedback
-- Seamless integration with Cursor AI
+- Voice commands for controlling the extension
+- Voice-to-text input for Cursor AI
+- Visual feedback for command recognition
+- Offline support (using Web Speech API)
 
 ## Installation
 
-1. Open VS Code
-2. Go to the Extensions view (Ctrl+Shift+X or Cmd+Shift+X)
-3. Search for "Cursor Voice Commands"
-4. Click Install
-5. Reload VS Code when prompted
-
-Alternatively, you can install the extension manually:
-1. Download the .vsix file from the releases page
-2. Open VS Code
-3. Go to the Extensions view
-4. Click the "..." menu in the top right
-5. Select "Install from VSIX..."
-6. Choose the downloaded .vsix file
+1. Download the extension from the VS Code marketplace
+2. Install the extension in VS Code/Cursor
+3. Grant microphone permissions when prompted
 
 ## Usage
 
-### Starting Voice Commands
+### Voice Commands
 
-1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) to open the command palette
-2. Type "Start Voice Commands" and press Enter
-3. A webview will open showing the current status
-4. Allow microphone access when prompted
-5. Start speaking your commands
+The extension recognizes the following voice commands:
 
-### Stopping Voice Commands
+1. **Start/Stop Listening**
+   - "Start listening" or "Start voice commands" - Activates voice recognition
+   - "Stop listening" or "Stop voice commands" - Deactivates voice recognition
 
-1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-2. Type "Stop Voice Commands" and press Enter
+2. **Cursor AI Interaction**
+   - "Hey Cursor [your message]" - Focuses the Cursor AI chat and inputs your message
+   - "Yo Cursor [your message]" - Same as above
+   - "Hi Cursor [your message]" - Same as above
+   - "Hello Cursor [your message]" - Same as above
+   - "Send to cursor" or "Send message" or "Send it" - Sends the current message to Cursor AI
 
-### Configuration
+### Workflow
 
-You can configure the extension by:
+1. Say "Start listening" to activate voice recognition
+2. To send a message to Cursor AI:
+   - Say "Hey Cursor" followed by your message (e.g., "Hey Cursor how do I implement a binary search?")
+   - The message will be typed into the chat input
+   - Say "Send to cursor" to actually send the message
+3. Say "Stop listening" when you're done
 
-1. Opening VS Code settings (Ctrl+, or Cmd+,)
-2. Search for "Cursor Voice"
-3. Available settings:
-   - `cursorVoice.language`: Set the language for speech recognition (default: "en-US")
+### Visual Feedback
 
-## Supported Languages
+The extension provides visual feedback through:
+- A status indicator showing whether voice recognition is active
+- A pulsing microphone icon when listening
+- Highlighted text when commands are recognized
+- Real-time transcript display
+- Notifications for important events
 
-The extension supports all languages available in the Web Speech API. Some common language codes:
-- English (US): `en-US`
-- English (UK): `en-GB`
-- Spanish: `es-ES`
-- French: `fr-FR`
-- German: `de-DE`
-- Dutch: `nl-NL`
+## Configuration
+
+You can configure the following settings in VS Code/Cursor settings:
+
+- `cursorVoice.language`: Set the language for voice recognition (default: "en-US")
+- `cursorVoice.autoStart`: Automatically start voice recognition when the extension activates (default: false)
+
+## Troubleshooting
+
+If you encounter issues:
+1. Make sure you've granted microphone permissions
+2. Check that your microphone is properly connected and working
+3. Verify that your browser supports the Web Speech API
+4. Try restarting VS Code/Cursor
 
 ## Requirements
 
-- VS Code 1.99.0 or higher
-- A working microphone
-- Internet connection (for Web Speech API)
-- Modern web browser (Chrome, Edge, or Firefox recommended)
+- VS Code or Cursor editor
+- Microphone
+- Web Speech API support in your browser
 
 ## Known Issues
 
-- Speech recognition may not work in all browsers
-- Some languages may have limited support
-- Microphone access must be granted for the extension to work
+- Voice recognition may not work in all browsers
+- Some commands might not be recognized in noisy environments
+- The extension requires an active internet connection for voice recognition
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Feel free to submit issues and enhancement requests!
 
 ## License
 
-This extension is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This extension is licensed under the MIT License.
 
 ## Support
 
