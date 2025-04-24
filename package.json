@@ -3,7 +3,7 @@
   "displayName": "Cursor Voice Commands",
   "description": "Use voice commands to interact with Cursor AI using Web Speech API",
   "version": "0.0.1",
-  "publisher": "your-publisher-name",
+  "publisher": "jari-wondergem",
   "engines": {
     "vscode": "^1.99.0"
   },
