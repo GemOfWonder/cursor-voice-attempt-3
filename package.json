@@ -3,9 +3,13 @@
   "displayName": "Cursor Voice Commands",
   "description": "Use voice commands to interact with Cursor AI using Web Speech API",
   "version": "0.0.1",
-  "publisher": "jari-wondergem",
+  "publisher": "gemofwonder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gem_of_Wonder/cursor-voice-attempt-3.git"
+  },
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.96.2"
   },
   "categories": [
     "Other"
@@ -52,7 +56,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.99.0",
+    "@types/vscode": "^1.96.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
